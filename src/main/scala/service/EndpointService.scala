@@ -81,14 +81,13 @@ trait EndpointService extends HttpService {
         put{
           entity(as[JsObject]){ data =>
             complete{
-              println(data)
               data.fields.get("data") match{
                 case Some(JsNull) =>  HttpResponse(BadRequest)
                 case Some(d) =>
                   string match{
                   case "left" => EndpointService.putData(RequestData(d.convertTo[String]), id, LeftRequest)
                   case "right" => EndpointService.putData(RequestData(d.convertTo[String]), id, RightRequest)
-                  case _ => HttpResponse(BadRequest)
+                  case _ => HttpResponse(NotFound)
                 }
                 case None => HttpResponse(BadRequest)
               }

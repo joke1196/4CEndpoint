@@ -45,7 +45,7 @@ class EndpointServiceSpec extends Specification with Specs2RouteTest with Endpoi
       Put("/v1/diff/1/right", HttpEntity(MediaTypes.`application/json`, """{ "data": "AA==" }""")) ~>
         route ~> check {}
       Get("/v1/diff/1") ~> route ~> check {
-        responseAs[String] must contain("sizeDoNotMatch")
+        responseAs[String] must contain("SizeDoNotMatch")
       }
     }
     "return the contentMatch if data are a match" in {
@@ -55,7 +55,7 @@ class EndpointServiceSpec extends Specification with Specs2RouteTest with Endpoi
       Put("/v1/diff/1/right", HttpEntity(MediaTypes.`application/json`, """{ "data": "AAAAAA==" }""")) ~>
         route ~> check {}
       Get("/v1/diff/1") ~> route ~> check {
-        responseAs[String] must contain("contentMatch")
+        responseAs[String] must contain("Equals")
       }
     }
     "return the difference if data are not a match" in {
@@ -64,7 +64,7 @@ class EndpointServiceSpec extends Specification with Specs2RouteTest with Endpoi
       Put("/v1/diff/2/right", HttpEntity(MediaTypes.`application/json`, """{ "data": "AQABAQ==" }""")) ~>
         route ~> check {}
       Get("/v1/diff/2") ~> route ~> check {
-        responseAs[String] must contain("contentDoNotMatch")
+        responseAs[String] must contain("ContentDoNotMatch")
         responseAs[String] must contain("offset")
       }
     }

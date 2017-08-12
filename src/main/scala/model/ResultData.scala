@@ -17,11 +17,11 @@ case class Diff(offset:Int, length:Int)
 case class ResultData(diffResultType: ResultType = "", diffs: Option[List[Diff]] = None)
 
 
-object ResultData extends DefaultJsonProtocol with SprayJsonSupport with NullOptions{
+object ResultData extends DefaultJsonProtocol with SprayJsonSupport{
   type ResultType = String
-  val sizeDoNotMatch :ResultType= "sizeDoNotMatch"
-  val contentMatch:ResultType = "contentMatch"
-  val contentDoNotMatch:ResultType = "contentDoNotMatch"
+  val sizeDoNotMatch :ResultType= "SizeDoNotMatch"
+  val contentMatch:ResultType = "Equals"
+  val contentDoNotMatch:ResultType = "ContentDoNotMatch"
   implicit val diffFormat = jsonFormat2(Diff.apply)
   implicit val resultDataFormat = jsonFormat2(ResultData.apply)
 
