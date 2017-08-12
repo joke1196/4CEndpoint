@@ -37,7 +37,12 @@ class EndpointServiceSpec extends Specification with Specs2RouteTest with Endpoi
         response.status mustEqual BadRequest
       }
     }
-
+    "return a BadRequest for PUT requests with data which are not Base64 encoded" in {
+      Put("/v1/diff/1/left", HttpEntity(MediaTypes.`application/json`, """{ "data": "?090$@Afds==" }""")) ~>
+        route ~> check {
+        response.status mustEqual BadRequest
+      }
+    }
     "return sizeDoNotMatch if diff have different sizes" in {
 
       Put("/v1/diff/1/left", HttpEntity(MediaTypes.`application/json`, """{ "data": "AAAAAA==" }""")) ~>

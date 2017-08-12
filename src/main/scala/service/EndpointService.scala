@@ -1,5 +1,7 @@
 package service
 
+import java.util.Base64
+
 import DAO.EndpointDAO
 import akka.actor.Actor
 import spray.routing._
@@ -8,6 +10,8 @@ import spray.http.MediaTypes._
 import spray.http._
 import model._
 import spray.json.{JsNull, JsObject, JsValue}
+
+import scala.util.Try
 
 
 // we don't implement our route structure directly in the service actor because
@@ -47,16 +51,22 @@ object EndpointService{
     * @return a HttpResponse if the data is insert
     */
   def putData(data:RequestData, id:Long, either: RequestType):HttpResponse = {
-    either match{
-      case LeftRequest =>
-        val currentData = EndpointDAO.get(id).map(diffData => diffData.copy(left = Some(data))).getOrElse(DiffData(left = Some(data)))
-        EndpointDAO.push(id, currentData)
-        HttpResponse(Created)
-      case RightRequest =>
-        val currentData = EndpointDAO.get(id).map(diffData => diffData.copy(right = Some(data))).getOrElse(DiffData(right = Some(data)))
-        EndpointDAO.push(id, currentData)
-        HttpResponse(Created)
+    Try{Base64.getDecoder.decode(data.data)}.toOption match{
+      case Some(_) =>
+        either match{
+        case LeftRequest =>
+          val currentData = EndpointDAO.get(id).map(diffData => diffData.copy(left = Some(data))).getOrElse(DiffData(left = Some(data)))
+          EndpointDAO.push(id, currentData)
+          HttpResponse(Created)
+        case RightRequest =>
+          val currentData = EndpointDAO.get(id).map(diffData => diffData.copy(right = Some(data))).getOrElse(DiffData(right = Some(data)))
+          EndpointDAO.push(id, currentData)
+          HttpResponse(Created)
+      }
+      case None => //Not a valid base64 string
+        HttpResponse(BadRequest)
     }
+
 
   }
 }
